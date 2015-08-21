@@ -5,13 +5,25 @@
 	<title>实现简单的jquery</title>
 </head>
 <body>
+<div class="outer">
 	<div id="put">put</div>
+</div>
+
+<div class="second">
+	<div>
+		<div class="test2">xxx</div>
+	</div>
+</div>
+
 	<script src="simpleJquery.js">
 	</script>
 	<script>
-	var a = jQuery( '#put' );
+	var a = jQuery( '#put' )
 	console.log( a );
 	a.unwrap();
+
+	var b = jQuery( '.test2' );
+	b.unwrap();
 	</script>
 </body>
 </html>
