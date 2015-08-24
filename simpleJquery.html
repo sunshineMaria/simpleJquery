@@ -3,27 +3,130 @@
 <head>
 	<meta charset="UTF-8">
 	<title>实现简单的jquery</title>
+	<script src="simpleJquery.js"></script>
 </head>
 <body>
-<div class="outer">
+<div class="first_unwrap">
 	<div id="put">put</div>
 </div>
+<button class="unwrap_btn">unwrap</button>
 
-<div class="second">
-	<div>
-		<div class="test2">xxx</div>
-	</div>
+<div class="second_wrap">
+	<div class="test2">wrap</div>
 </div>
 
-	<script src="simpleJquery.js">
-	</script>
-	<script>
-	var a = jQuery( '#put' )
-	console.log( a );
-	a.unwrap();
+<button class="wrap_btn">wrap</button>
 
-	var b = jQuery( '.test2' );
-	b.unwrap();
+
+<div class="third_wrapInner">
+	<p class="test">wrapInner</p>
+	<p class="test2">wrapInner</p>
+</div>
+<button class="wrapInner_btn">wrapInner</button>
+
+
+<div class="append">
+	<p class="test">append</p>
+	<p class="test2">append</p>
+</div>
+<button class="append_btn">append</button>
+
+
+
+<div class="appendTo"></div>
+<button class="appendTo_btn">appendTo</button>
+<p class="to_append">hello</p>
+
+<div class="html"><p>world</p><p>world2</div>
+<p class="html_content"></p>
+<button class="html_btn">html</button>
+
+
+<div class="prepend">
+	<p class="test"><a>prepend</a></p>
+	<p class="test2">prepend</p>
+	<div>
+		sdfsadfsaf
+		<div>ladafasfd</div>
+	</div>
+</div>
+<button class="prepend_btn">prepend</button>
+<button class="text_btn">text</button>
+	<script>
+	var unwrapBtn = document.querySelector('.unwrap_btn');
+	unwrapBtn.onclick = function(){
+		var a = jQuery( 'html' )
+		console.log( a );
+		a.unwrap();
+	}
+	
+	var wrapBtn = document.querySelector( '.wrap_btn');
+	wrapBtn.onclick = function(){
+		var el = jQuery( '.second_wrap' );
+		el.wrap('<div class="wrapper"><p><a></a></p></div>');
+		// el.wrap( wrapper() );
+		// el.wrap( document.createElement("div") );
+	}
+
+	var wrapInnerBtn = document.querySelector( '.wrapInner_btn' );
+	wrapInnerBtn.onclick = function(){
+		var el = jQuery( '.third_wrapInner' );
+		el.wrapInner(document.createElement('p'));
+	}
+
+	function wrapper(){
+		return '<div class="wrapper"></div>';
+	}
+	
+	var appendBtn = document.querySelector( '.append_btn' );
+	appendBtn.onclick = function(){
+		var el = jQuery( '.append' );
+		var a = document.createElement('div');
+		var b = document.createElement( 'p' );
+		var c = document.createElement( 'a' );
+		c.innerHTML= '<div>hello</div>';
+		// el.append( '<div class="wrapper"></div><p><a>world</a></p>' );
+		// el.append( document.createElement('div') );
+		el.append( [a, b, c] );
+	}
+
+	var appendToBtn = document.querySelector( '.appendTo_btn' );
+	appendToBtn.onclick = function(){
+		var el = jQuery( '.to_append' );
+		var target = document.querySelector( '.appendTo' );
+		// el.append( '<div class="wrapper"></div><p><a>world</a></p>' );
+		// el.append( document.createElement('div') );
+		el.appendTo( target );
+	}
+
+	var htmlBtn = document.querySelector( '.html_btn' );
+	htmlBtn.onclick = function(){
+		var el = jQuery( '.html' );
+		var a = el.html();
+		var result = jQuery( '.html_content' );
+		result.html( a );
+	}
+
+
+	var prependBtn = document.querySelector( '.prepend_btn' );
+	prependBtn.onclick = function(){
+		var el = jQuery( '.prepend' );
+		var a = document.createElement('div');
+		var b = document.createElement( 'p' );
+		var c = document.createElement( 'a' );
+		c.innerHTML= '<div>hello</div>';
+		// el.append( '<div class="wrapper"></div><p><a>world</a></p>' );
+		el.prepend( document.createTextNode( "Hello" ) );
+		// el.prepend( [a, b, c] );
+	}
+
+	var textBtn = document.querySelector( '.text_btn' );
+	textBtn.onclick = function(){
+		var el = jQuery( '.prepend' );
+		var a = el.text();
+		jQuery( '.second_wrap ').html( a );
+	}
+	
 	</script>
 </body>
 </html>
