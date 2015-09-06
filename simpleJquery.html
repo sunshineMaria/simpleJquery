@@ -52,7 +52,82 @@
 </div>
 <button class="prepend_btn">prepend</button>
 <button class="text_btn">text</button>
+
+<div class="text">
+</div>
+
+<div class="after">
+	<p class="after_inner">xxxx</p>
+	after
+</div>
+<button class="after_btn">after</button>
+
+<div class="insertAfter">insertAter</div>
+<button class="insertAfter_btn">insertAter</button>
+
+
+<div class="before">
+	<p class="before_inner">adasdfs</p>
+	before
+</div>
+<button class="before_btn">before</button>
+
+<p class="detach">
+	detach
+</p>
+<button class="detach_btn">detach</button>
+
+<div class="empty"><p>empty<span>2</span></p></div>
+<button class="empty_btn">empty</button>
+
+<div class="remove"><p>remove<span>2</span></p></div>
+<button class="remove_btn">remove</button>
+
+
+<div class="replaceWith"><p>replaceWith<span>2</span></p></div>
+<button class="replaceWith_btn">replaceWith</button>
+
+<div class="replaceAll"><p>我要去替换</p></div>
+<button class="replaceAll_btn">replaceAll</button>
 	<script>
+
+	var replaceAllBtn = document.querySelector('.replaceAll_btn');
+	replaceAllBtn.onclick = function(){
+		var a = jQuery( '.replaceAll' )
+		var c = jQuery( 'replaceWith' );
+		var b = a.replaceAll( '.replaceWith' );
+		console.log( b );
+	}
+
+	var replaceWithBtn = document.querySelector('.replaceWith_btn');
+	replaceWithBtn.onclick = function(){
+		var a = jQuery( '.replaceWith' )
+		var c = document.createElement('div');
+		c.innerHTML = '我也想代替';
+		var b = a.replaceWith( c );
+		console.log( b );
+	}
+
+	var removeBtn = document.querySelector('.remove_btn');
+	removeBtn.onclick = function(){
+		var a = jQuery( '.remove' )
+		var b = a.remove();
+		console.log( b );
+	}
+
+	var emptyBtn = document.querySelector('.empty_btn');
+	emptyBtn.onclick = function(){
+		var a = jQuery( '.empty' )
+		a.empty();
+	}
+
+	var detachBtn = document.querySelector('.detach_btn');
+	detachBtn.onclick = function(){
+		var a = jQuery( '.detach' )
+		a.detach();
+		jQuery('.empty').append( jQuery( '.detach' ) );
+	}
+
 	var unwrapBtn = document.querySelector('.unwrap_btn');
 	unwrapBtn.onclick = function(){
 		var a = jQuery( 'html' )
@@ -125,6 +200,34 @@
 		var el = jQuery( '.prepend' );
 		var a = el.text();
 		jQuery( '.second_wrap ').html( a );
+		var text = jQuery( '.text' );
+		text.text( '<p>I am text</p> ' );
+	}
+
+	var afterBtn = document.querySelector( '.after_btn' );
+	afterBtn.onclick = function(){
+		var el = jQuery( '.after' );
+		var a = document.createElement( 'div' );
+		a.innerHTML = 'hello hello';
+		el.after( a );
+	}
+
+	var insertAterBtn = document.querySelector( '.insertAfter_btn' );
+	insertAterBtn.onclick = function(){
+		// var el = jQuery( '.insertAfter' );
+		var insertEl = jQuery( '.after' );
+		// console.log( insertEl );
+		insertEl.insertAfter( '.insertAfter' );
+	}
+
+	var beforeBtn = document.querySelector( '.before_btn' );
+	beforeBtn.onclick = function(){
+		var el = jQuery( '.before' );
+		var a = document.createElement( 'div' );
+		a.innerHTML = 'hello hello';
+		var b = document.createElement( 'p' );
+		b.innerHTML = 'world world';
+		el.before( [a,b] );
 	}
 	
 	</script>

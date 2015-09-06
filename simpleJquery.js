@@ -1,23 +1,33 @@
 var jQuery = function( selector ) {
+	for ( var i = 0; i< detachedObj.length; i++ ){
+		if( selector == detachedObj[i].selector ){
+			return detachedObj[i];
+		}
+	}
 	return new jQueryInit( selector );
 }
 
 var jQueryInit = function( selector ){
-	this.element = document.querySelector( selector );
-	if( this.element == undefined ){
-		console.log( 'selector was not defined' );
+	this.selector = selector;
+	if( selector == undefined || selector == ''){
+		throw 'selector was not defined' ;
+	}else{
+		this.element = document.querySelector( selector );
+		this.isJqueryObj = true;
 	}
 }
+
+var detachedObj = [];
 
 jQueryInit.prototype = {
 	/* Remove the parent of the set of matched elements from the DOM, leaving the matched elements in their place */ 
 	unwrap : function(){
 		var el = this.element;
 		var elParent = el.parentNode;
-		if ( elParent != null && el.nodeName == 'BODY' && elParent.nodeName != 'BODY' && elParent.parentNode ){
+		if ( elParent != null && el.nodeName != 'BODY' && elParent.nodeName != 'BODY' && elParent.parentNode ){
 			elParent.parentNode.replaceChild( el, elParent );
 		}else{
-			console.log( '不满足unwrap条件')
+			throw '不满足unwrap条件';
 		}
 		return this;
 	},
@@ -45,10 +55,13 @@ jQueryInit.prototype = {
 	append: function( html ){
 		// 没有考虑html为jQuery对象的情况，其实这个判断一下它有没有一个特定的我自定义的属性就可以。
 		var el = this.element;
+		if( html.isJqueryObj ){
+			html = html.element;
+		}
 		var container = document.createElement( 'div' );
-		var hlen = html.length;
 		var temp;
-		if( typeof html == 'object'){
+		if( typeof html == 'object' ){
+			var hlen = html.length;
 			if( hlen > 1 ){
 				temp = createTempContainer( html );
 			}else{
@@ -71,6 +84,7 @@ jQueryInit.prototype = {
 		// 首先区分target是字符串还是Element对象
 		if( typeof target == 'string' ){
 			tEl = document.querySelector( target );
+			throw Error('can not find the target element');
 		}else{
 			tEl = target;
 		}
@@ -82,7 +96,7 @@ jQueryInit.prototype = {
 		if( !html ){
 			return el.innerHTML;
 		}else if( typeof html == 'string' ){
-			/*用新的内容替换这些元素前，jQuery从子元素删除其他结构，如数据和事件处理程序。*/
+			/* 用新的内容替换这些元素前，jQuery从子元素删除其他结构，如数据和事件处理程序。*/
 			// 问题：不懂上面这句话的意思。
 			var nodeList = el.childNodes;
 			var len = nodeList.length;
@@ -96,9 +110,9 @@ jQueryInit.prototype = {
 	prepend: function( html ){
 		var el = this.element;
 		var container = document.createElement( 'div' );
-		var hlen = html.length;
 		var temp;
 		if( typeof html == 'object'){
+			var hlen = html.length;
 			if( hlen > 1 ){
 				temp = createTempContainer( html );
 			}else{
@@ -112,31 +126,164 @@ jQueryInit.prototype = {
 		el.insertBefore( temp, el.childNodes[0] );
 		return this;
 	},
-	prependTo: function( html ){
+	prependTo: function( target ){
 		var el = this.element;
 		// 首先区分target是字符串还是Element对象
 		if( typeof target == 'string' ){
-			tEl = document.querySelector( target );
+			tEl = jQuery( target );
+			throw Error('can not find the target element');
 		}else{
 			tEl = target;
 		}
-		tEl.insertBefore( el, tEl.childNodes[0] );
+		this.prepend.call( tEl, el );
 		return tEl;
 	},
-	text: function( html ){
+	text: function( text ){
 		var el = this.element;
 		var resultStr="";
-		if( !html ){
-			//需要遍历节点树
-			resultStr = traversNode( el );
-			return resultStr;
+		if( !text ){
+			// 需要遍历节点树[后来证明不需要]
+			// resultStr = getText( el );
+			// return resultStr;
+			return el.textContent;
 		}else{
-
+			el.textContent = text;
 		}
+	},
+	after: function( html ){
+		var el = this.element;
+		var elParent = el.parentNode;
+		var container = document.createElement( 'div' );
+		var outerContainer = document.createElement( 'div' );
+		var temp;
+		var nodes;
+		if( typeof html == 'object'){
+			var hlen = html.length;
+			if( hlen > 1 ){
+				temp = createTempContainer( html );
+			}else{
+				temp = html;
+			}
+		}else{
+			container.innerHTML = html;
+			nodes = container.childNodes;
+			temp = createTempContainer( nodes );
+		}
+		outerContainer.appendChild( el.cloneNode( true ) );
+		outerContainer.appendChild( temp );
+		nodes = outerContainer.childNodes;
+		temp = createTempContainer( nodes );
+		elParent.replaceChild( temp, el );
+		return this;
+	},
+	insertAfter: function( target ){
+		var el = this.element;
+		// 首先区分target是字符串还是Element对象
+		if( typeof target == 'string' ){
+			tEl = jQuery( target );
+
+		}else{
+			tEl = target;
+		}
+		this.after.call( tEl, el );
+		return tEl;
+	},
+	before: function( html ){
+		var el = this.element;
+		var elParent = el.parentNode;
+		var container = document.createElement( 'div' );
+		var outerContainer = document.createElement( 'div' );
+		var temp;
+		var nodes;
+		if( typeof html == 'object'){
+			var hlen = html.length;
+			if( hlen > 1 ){
+				temp = createTempContainer( html );
+			}else{
+				temp = html;
+			}
+		}else{
+			container.innerHTML = html;
+			nodes = container.childNodes;
+			temp = createTempContainer( nodes );
+		}
+		outerContainer.appendChild( temp );
+		outerContainer.appendChild( el.cloneNode( true ) );
+		nodes = outerContainer.childNodes;
+		temp = createTempContainer( nodes );
+		elParent.replaceChild( temp, el );
+		return this;
+	},
+	insertBefore: function( target ){
+		var el = this.element;
+		// 首先区分target是字符串还是Element对象
+		if( typeof target == 'string' ){
+			tEl = jQuery( target );
+			throw Error('can not find the target element');
+		}else{
+			tEl = target;
+		}
+		this.before.call( tEl, el );
+		return tEl;
+	},
+	detach: function(){
+		var el = this.element;
+		var elParent = el.parentNode;
+		elParent.removeChild( el );
+		detachedObj.push( this );
+		return this;
+	},
+	empty: function(){
+		var el = this.element;
+		el.innerHTML = "";
+	},
+	remove: function(){
+		var el = this.element;
+		var elParent = el.parentNode;
+		el.innerHTML = "";
+		elParent.removeChild( el );
+		return this;
+	},
+	replaceWith: function( newContent ){
+		//用提供的内容替换集合中所有匹配的元素并且返回被删除元素的集合。
+		var el = this.element;
+		var elParent = el.parentNode;
+		var container = document.createElement( 'div' );
+		var temp;
+		if( typeof newContent == 'object'){
+			var hlen = newContent.length;
+			if( hlen > 1 ){
+				temp = createTempContainer( newContent );
+			}else{
+				temp = newContent;
+			}
+		}else{
+			container.innerHTML = newContent;
+			var nodes = container.childNodes;
+			var temp = createTempContainer( nodes );
+		}
+		elParent.replaceChild( temp, el );
+		return this;
+	},
+	replaceAll: function( target ){
+		var el = this.element;
+		// 首先区分target是字符串还是Element对象
+		if( typeof target == 'string' ){
+			tEl = jQuery( target );
+			if( !tEl.element ){
+				throw Error('can not find the target element');
+				return false;
+			}
+
+		}else{
+			tEl = target;
+		}
+		this.replaceWith.call( tEl, el );
+		return tEl;
 	}
 
-} 
 
+} 
 
 function createNewHTML( html, originContent ){
 	var container = document.createElement('div');
@@ -173,24 +320,29 @@ function createTempContainer( nodeList ){
 	return fragement;
 }
 
-var str = "";
-function traversNode( node ){
-	if( node.hasChildNodes() ){
-		var nodeList = node.childNodes;
-		var len = nodeList.length;
-		for( var i = 0; i < len; i++ ){
-			var currentNode = nodeList[i];
-			if( currentNode.nodeType == 3 ){
-				var isWhiteSpace = ( /^\s+$/.test( currentNode.nodeValue ));
-				if( !isWhiteSpace ){
-					str += currentNode.nodeValue;
+/* 以下方法因为javascript的textContent属性变的没用了！—_— */
+function getText( node ){
+	var str = "";
+	traverseNode( node );
+	return str;
+	function traverseNode( node ){
+		if( node.hasChildNodes() ){
+			var nodeList = node.childNodes;
+			var len = nodeList.length;
+			for( var i = 0; i < len; i++ ){
+				var currentNode = nodeList[i];
+				if( currentNode.nodeType == 3 ){
+					var isWhiteSpace = ( /^\s+$/.test( currentNode.nodeValue ));
+					if( !isWhiteSpace ){
+						str += currentNode.nodeValue;
+						console.log( str );
+					}
+				}else if( currentNode.nodeType == 1 ){
+					traverseNode( currentNode );
 				}
-			}else if( currentNode.nodeType == 1 ){
-				traversNode( currentNode )
 			}
 		}
-	}
-	return str;
+	};
 }
 
 /**
